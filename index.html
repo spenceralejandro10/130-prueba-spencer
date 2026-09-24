@@ -19,6 +19,24 @@
     .actions{grid-column:1/-1}.primary{border:0;background:var(--blue);color:#fff;padding:12px 18px;border-radius:10px;font-weight:800;cursor:pointer}.msg{margin-top:12px;font-weight:700}
     .tablewrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px}table{border-collapse:collapse;width:max-content;min-width:100%}th,td{padding:10px 12px;border-bottom:1px solid #edf0f4;white-space:nowrap;font-size:12px}th{position:sticky;top:0;background:#f8fafc;text-align:left}
     .simple{font-size:14px;line-height:1.5;color:#344054}.config td:first-child,.guide td:first-child{font-weight:800}.legend{display:flex;gap:10px;flex-wrap:wrap}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+    .panel-sheet{background:#fff;border:1px solid #cfd8df;overflow:hidden}
+    .panel-titlebar{background:#063349;color:#fff;padding:18px 20px;font-size:24px;font-weight:800}
+    .panel-subbar{background:#087080;color:#fff;text-align:center;padding:10px 16px;font-size:19px;font-weight:700}
+    .sheet-section-title{background:#087080;color:#fff;text-align:center;padding:8px 10px;font-size:14px;font-weight:800;text-transform:uppercase}
+    .panel-detail-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(330px,1fr);gap:10px;margin-top:22px;align-items:start}
+    .assessment-wrap,.legend-wrap,.key-wrap{background:#fff;border:1px solid #cfd8df}
+    .assessment-table,.legend-table,.key-table{width:100%;border-collapse:collapse;table-layout:fixed}
+    .assessment-table th,.assessment-table td,.legend-table td,.key-table th,.key-table td{border:1px solid #d8dee5;padding:8px 10px;font-size:13px;white-space:normal;vertical-align:middle}
+    .assessment-table th{background:#eef6f8;text-align:center;font-size:13px}
+    .assessment-table th:nth-child(1){width:16%}.assessment-table th:nth-child(2){width:10%}.assessment-table th:nth-child(3){width:12%}.assessment-table th:nth-child(4){width:28%}.assessment-table th:nth-child(5){width:34%}
+    .value-blue{background:#cfe9f7;text-align:center;font-weight:800}
+    .state-cell{text-align:center;font-weight:800}
+    .state-good{background:#d9ead3}.state-warn{background:#ffe599}.state-bad{background:#f4cccc}.state-info{background:#cfe2f3}
+    .legend-table td:first-child{width:22%;text-align:center;font-weight:900}
+    .legend-blue{background:#cfe9f7}.legend-purple{background:#eadcf8}.legend-green{background:#d9ead3}.legend-orange{background:#fce5cd}.legend-red{background:#f4cccc}
+    .how-box{margin-top:18px;border:1px solid #cfd8df}.how-title{background:#087080;color:#fff;padding:10px;font-size:13px;font-weight:800}.how-line{background:#edf7fa;border-top:1px solid #d8dee5;padding:12px;font-size:12px}
+    .key-wrap{margin-top:22px}.key-table th{background:#fff;text-align:center;font-size:13px}.key-table td{text-align:center;font-size:15px;font-weight:800;padding:18px 10px}
+    @media(max-width:1000px){.panel-detail-grid{grid-template-columns:1fr}}
     @media(max-width:1000px){.app{grid-template-columns:1fr}.side{position:static;height:auto}.nav{grid-template-columns:repeat(3,1fr)}.main{padding:18px}.grid4,.grid3,.grid2,form{grid-template-columns:1fr 1fr}}
     @media(max-width:640px){.nav{grid-template-columns:1fr 1fr}.grid4,.grid3,.grid2,form{grid-template-columns:1fr}}
   </style>
@@ -38,9 +56,12 @@
   </aside>
   <main class="main">
     <section id="panel" class="view active">
-      <h1 class="title">PROYECTO 130 — PANEL DE PROGRESO</h1>
-      <p class="sub">Monitoreo integral y evolución de composición corporal hacia la meta.</p>
-      <div class="grid grid4">
+      <div class="panel-sheet">
+        <div class="panel-titlebar">PROYECTO 130 — PANEL DE PROGRESO</div>
+        <div class="panel-subbar">Monitoreo integral y evolución de composición corporal hacia la meta</div>
+      </div>
+
+      <div class="grid grid4 section">
         <div class="card kpi"><span class="label">Peso actual</span><b id="pPeso">—</b></div>
         <div class="card kpi"><span class="label">Meta</span><b id="pMeta">90,0 kg</b></div>
         <div class="card kpi"><span class="label">Por bajar</span><b id="pFalta">—</b></div>
@@ -48,14 +69,8 @@
       </div>
 
       <div class="grid grid2 section">
-        <div class="card">
-          <h2>Composición corporal</h2>
-          <div id="compList"></div>
-        </div>
-        <div class="card">
-          <h2>Salud y metabolismo</h2>
-          <div id="healthList"></div>
-        </div>
+        <div class="card"><h2>Composición corporal</h2><div id="compList"></div></div>
+        <div class="card"><h2>Salud y metabolismo</h2><div id="healthList"></div></div>
       </div>
 
       <div class="grid grid4 section">
@@ -65,9 +80,45 @@
         <div class="card kpi"><span class="label">Cómo vamos</span><b id="pRuta">—</b></div>
       </div>
 
-      <div class="card section">
-        <h2>Lectura simple</h2>
-        <div id="pLectura" class="simple">—</div>
+      <div class="card section"><h2>Lectura simple</h2><div id="pLectura" class="simple">—</div></div>
+
+      <div class="panel-detail-grid">
+        <div class="assessment-wrap">
+          <div class="sheet-section-title">QUÉ ESTÁ BIEN, QUÉ DEBE SUBIR Y QUÉ DEBE BAJAR</div>
+          <table class="assessment-table">
+            <thead><tr><th>Dato</th><th>Hoy</th><th>Estado</th><th>Rango fácil de entender</th><th>Qué significa</th></tr></thead>
+            <tbody id="assessmentBody"></tbody>
+          </table>
+        </div>
+        <div>
+          <div class="legend-wrap">
+            <div class="sheet-section-title">LEYENDA DE COLORES</div>
+            <table class="legend-table">
+              <tbody>
+                <tr><td class="legend-blue">AZUL</td><td>Dato que llega de tu báscula / Zepp Life</td></tr>
+                <tr><td class="legend-purple">MORADO</td><td>Meta, objetivo o valor al que queremos llegar</td></tr>
+                <tr><td class="legend-green">VERDE</td><td>Bien: ya está dentro del rango objetivo</td></tr>
+                <tr><td class="legend-orange">NARANJA</td><td>Regular: necesita mejorar, pero no está en la zona de mayor prioridad</td></tr>
+                <tr><td class="legend-red">ROJO</td><td>Prioridad: claramente fuera del objetivo; es de lo primero que debemos mejorar</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="how-box">
+            <div class="how-title">CÓMO LEERLO</div>
+            <div class="how-line">Azul responde: ¿qué midió hoy la báscula?</div>
+            <div class="how-line">Morado responde: ¿a dónde queremos llegar?</div>
+            <div class="how-line">Verde, naranja y rojo responden: ¿cómo estoy frente a esa meta?</div>
+            <div class="how-line">Ningún dato del panel queda sin explicación: si no existe un rango absoluto útil, se compara con tu valor inicial y su tendencia.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="key-wrap">
+        <div class="sheet-section-title">NÚMEROS CLAVE DEL PROYECTO</div>
+        <table class="key-table">
+          <thead><tr><th>PESO ACTUAL</th><th>META</th><th>IDEAL ZEPP</th><th>FALTAN</th><th>FECHA META</th></tr></thead>
+          <tbody><tr><td id="keyWeight">—</td><td id="keyGoal">—</td><td id="keyIdeal">—</td><td id="keyRemain">—</td><td id="keyDate">—</td></tr></tbody>
+        </table>
       </div>
     </section>
 
@@ -269,11 +320,12 @@ function renderPanel(){
   const r=history[history.length-1], iw=initialWeight();
   const lost=iw-r.weight, total=iw-CFG.goal, progress=total===0?0:(lost/total)*100, remain=Math.max(r.weight-CFG.goal,0);
   document.getElementById("pPeso").textContent=fmt(r.weight,1)+" kg";
+  document.getElementById("pMeta").textContent=fmt(CFG.goal,1)+" kg";
   document.getElementById("pFalta").textContent=fmt(remain,1)+" kg";
   document.getElementById("pProg").textContent=fmt(Math.max(0,progress),0)+"%";
   document.getElementById("compList").innerHTML=
     metric("Grasa corporal",fmt(r.fat,1),statusFat(r.fat),"%")+
-    metric("Masa muscular",fmt(r.muscle,2),statusMuscle(r.muscle),"kg")+
+    metric("Masa muscular",fmt(r.muscle,1),statusMuscle(r.muscle),"kg")+
     metric("Agua corporal",fmt(r.water,1),statusWater(r.water),"%")+
     metric("Masa ósea",fmt(r.bone,1),statusBone(r.bone),"kg")+
     metric("Proteína",fmt(r.protein,1),statusProtein(r.protein),"%");
@@ -284,6 +336,7 @@ function renderPanel(){
     metric("Puntuación",fmt(r.score,0),statusScore(r.score))+
     metric("Edad corporal",fmt(r.bodyAge,0),statusAge(r.bodyAge),"años")+
     metric("Sueño",fmt(r.sleep,1),["DATO ACTUAL","info"],"h");
+
   const today=new Date().toISOString().slice(0,10), totalDays=daysBetween(CFG.start,CFG.target)+1;
   const day=Math.max(1,Math.min(daysBetween(CFG.start,today)+1,totalDays));
   const remaining=Math.max(daysBetween(today,CFG.target),0);
@@ -297,6 +350,43 @@ function renderPanel(){
   document.getElementById("pSem").textContent=fmt(kgWeek,1)+" kg/sem";
   document.getElementById("pRuta").textContent=routeTxt;
   document.getElementById("pLectura").textContent=r.reading;
+
+  function rowStateClass(status){
+    const cls=status[1];
+    return cls==="good"?"state-good":cls==="bad"?"state-bad":cls==="warn"?"state-warn":"state-info";
+  }
+  const assessment=[
+    ["IMC",fmt(r.bmi,1),statusBMI(r.bmi),fmt(CFG.bmi.from,1)+"–"+fmt(CFG.bmi.to,1)+" = rango de referencia",
+      statusBMI(r.bmi)[0]==="EN RANGO"?"Está dentro del rango de referencia.":"Con el peso bajando, este número también debe ir bajando."],
+    ["Grasa corporal",fmt(r.fat,1),statusFat(r.fat),fmt(CFG.fat.normalFrom,0)+"–"+fmt(CFG.fat.normalTo,0)+"% = rango normal de Zepp",
+      (statusFat(r.fat)[0]==="ALTA"||statusFat(r.fat)[0]==="ELEVADA")?"Debe bajar con el tiempo. Lo importante es que baje sin que el músculo caiga mucho.":"Está en o cerca del rango."],
+    ["Agua corporal",fmt(r.water,1),statusWater(r.water),fmt(CFG.water.from,0)+"–"+fmt(CFG.water.to,1)+"% = rango normal de Zepp",
+      statusWater(r.water)[0]==="BAJA"?"Debe subir hacia el rango. El agua también puede mover otras cifras de la báscula.":"Está dentro o por encima del rango."],
+    ["Proteína",fmt(r.protein,1),statusProtein(r.protein),fmt(CFG.protein.from,0)+"–"+fmt(CFG.protein.to,0)+"% = rango normal de Zepp",
+      statusProtein(r.protein)[0]==="BAJA"?"Debe subir hacia el rango y se mira junto con la masa muscular.":"Está dentro o por encima del rango."],
+    ["Grasa visceral",fmt(r.visceral,0),statusVisceral(r.visceral),"Menos de "+CFG.visceral.normalBelow+" = rango normal de Zepp",
+      statusVisceral(r.visceral)[0]==="EN RANGO"?"Bien. Mantenerla ahí.":"Debe bajar. La tendencia de varias mediciones importa más que un solo día."],
+    ["Músculo",fmt(r.muscle,1),statusMuscle(r.muscle),"Referencia personal: "+fmt(initialMuscle(),1)+" kg al inicio",
+      "La meta es conservar la mayor cantidad posible mientras baja el peso. Se compara automáticamente contra tu inicio y luego contra la tendencia."],
+    ["Masa ósea",fmt(r.bone,1),statusBone(r.bone),fmt(CFG.bone.from,1)+"–"+fmt(CFG.bone.to,1)+" kg = rango normal de Zepp",
+      statusBone(r.bone)[0]==="EN RANGO"?"Está en rango.":"Se sigue como tendencia; no hace falta perseguir cambios diarios."],
+    ["BMR de la báscula",fmt(r.bmr,0),["DATO ACTUAL","info"],"Se actualiza con el valor diario de Zepp",
+      "No necesita una meta fija: es una estimación de gasto en reposo que cambia con tu cuerpo. Guardamos y comparamos su evolución."],
+    ["Edad corporal",fmt(r.bodyAge,0),statusAge(r.bodyAge),"Se compara con tu edad real: "+CFG.age+" años",
+      statusAge(r.bodyAge)[0]==="POR ENCIMA"?"La app la muestra por encima de tu edad real. Queremos ver este número bajar con el tiempo.":"Está igual o por debajo de tu edad real."],
+    ["Puntuación",fmt(r.score,0),statusScore(r.score),"Meta de seguimiento: superar "+fmt(initialScore(),0)+" puntos",
+      "No tiene un rango universal que podamos convertir en meta médica. Aquí sí tiene objetivo: mejorar respecto a tus "+fmt(initialScore(),0)+" puntos iniciales."]
+  ];
+  document.getElementById("assessmentBody").innerHTML=assessment.map(x=>
+    "<tr><td>"+x[0]+"</td><td class=\"value-blue\">"+x[1]+"</td><td class=\"state-cell "+rowStateClass(x[2])+"\">"+x[2][0]+"</td><td>"+x[3]+"</td><td>"+x[4]+"</td></tr>"
+  ).join("");
+
+  const parts=CFG.target.split("-");
+  document.getElementById("keyWeight").textContent=fmt(r.weight,1)+" kg";
+  document.getElementById("keyGoal").textContent=fmt(CFG.goal,0)+" kg";
+  document.getElementById("keyIdeal").textContent=fmt(CFG.zeppIdeal,1)+" kg";
+  document.getElementById("keyRemain").textContent=fmt(remain,1)+" kg";
+  document.getElementById("keyDate").textContent=parts[2]+"/"+parts[1]+"/"+parts[0];
 }
 
 const HEAD=["Día","Fecha","Peso (kg)","IMC","Grasa (%)","Agua (%)","Proteína (%)","BMR báscula (kcal)","Grasa visceral","Músculo (kg)","Masa ósea (kg)","Puntuación","Edad corporal","Peso ideal Zepp (kg)","Tipo de cuerpo","Peso de ruta (kg)","Cambio peso (kg)","Cambio grasa (pp)","Cambio músculo (kg)","Cambio agua (pp)","Cambio visceral","Promedio 7 días peso","Promedio 7 días grasa","Lectura simple","Evidencia","Sueño (h)"];
