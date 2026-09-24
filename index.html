@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Proyecto 130</title>
+  <style>
+    :root{--bg:#f6f7fb;--card:#fff;--ink:#172033;--muted:#667085;--line:#dfe3ea;--blue:#2563eb;--purple:#7c3aed;--green:#16a34a;--orange:#ea580c;--red:#dc2626}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}.side{background:#111827;color:#fff;padding:24px 16px;position:sticky;top:0;height:100vh}
+    .brand{font-size:22px;font-weight:800;margin:0 8px 24px}.nav{display:grid;gap:8px}.nav button{border:0;background:transparent;color:#d1d5db;text-align:left;padding:12px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .nav button.active,.nav button:hover{background:#1f2937;color:#fff}.main{padding:28px;max-width:1500px;width:100%;margin:auto}
+    .view{display:none}.view.active{display:block}.title{font-size:30px;font-weight:800;margin:0 0 6px}.sub{color:var(--muted);margin:0 0 24px}
+    .grid{display:grid;gap:16px}.grid4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}.kpi b{display:block;font-size:28px;margin-top:8px}.label{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase}
+    .section{margin-top:18px}.section h2{font-size:18px;margin:0 0 12px}.metric{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid #edf0f4}.metric:last-child{border-bottom:0}
+    .badge{font-size:12px;font-weight:800;padding:6px 9px;border-radius:999px}.good{background:#dcfce7;color:#166534}.warn{background:#ffedd5;color:#9a3412}.bad{background:#fee2e2;color:#991b1b}.info{background:#dbeafe;color:#1e40af}.neutral{background:#ede9fe;color:#5b21b6}
+    form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:800;color:var(--muted)}input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+    .actions{grid-column:1/-1}.primary{border:0;background:var(--blue);color:#fff;padding:12px 18px;border-radius:10px;font-weight:800;cursor:pointer}.msg{margin-top:12px;font-weight:700}
+    .tablewrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px}table{border-collapse:collapse;width:max-content;min-width:100%}th,td{padding:10px 12px;border-bottom:1px solid #edf0f4;white-space:nowrap;font-size:12px}th{position:sticky;top:0;background:#f8fafc;text-align:left}
+    .simple{font-size:14px;line-height:1.5;color:#344054}.config td:first-child,.guide td:first-child{font-weight:800}.legend{display:flex;gap:10px;flex-wrap:wrap}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+    @media(max-width:1000px){.app{grid-template-columns:1fr}.side{position:static;height:auto}.nav{grid-template-columns:repeat(3,1fr)}.main{padding:18px}.grid4,.grid3,.grid2,form{grid-template-columns:1fr 1fr}}
+    @media(max-width:640px){.nav{grid-template-columns:1fr 1fr}.grid4,.grid3,.grid2,form{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">PROYECTO 130</div>
+    <div class="nav">
+      <button data-view="panel" class="active">Panel</button>
+      <button data-view="captura">Captura manual</button>
+      <button data-view="historial">Historial</button>
+      <button data-view="simulador">Simulador</button>
+      <button data-view="guia">Guía</button>
+      <button data-view="config">Configuración</button>
+    </div>
+  </aside>
+  <main class="main">
+    <section id="panel" class="view active">
+      <h1 class="title">PROYECTO 130 — PANEL DE PROGRESO</h1>
+      <p class="sub">Monitoreo integral y evolución de composición corporal hacia la meta.</p>
+      <div class="grid grid4">
+        <div class="card kpi"><span class="label">Peso actual</span><b id="pPeso">—</b></div>
+        <div class="card kpi"><span class="label">Meta</span><b id="pMeta">90,0 kg</b></div>
+        <div class="card kpi"><span class="label">Por bajar</span><b id="pFalta">—</b></div>
+        <div class="card kpi"><span class="label">% progreso</span><b id="pProg">—</b></div>
+      </div>
+
+      <div class="grid grid2 section">
+        <div class="card">
+          <h2>Composición corporal</h2>
+          <div id="compList"></div>
+        </div>
+        <div class="card">
+          <h2>Salud y metabolismo</h2>
+          <div id="healthList"></div>
+        </div>
+      </div>
+
+      <div class="grid grid4 section">
+        <div class="card kpi"><span class="label">Día del plan</span><b id="pDia">—</b></div>
+        <div class="card kpi"><span class="label">Días que faltan</span><b id="pDias">—</b></div>
+        <div class="card kpi"><span class="label">Bajar por semana</span><b id="pSem">—</b></div>
+        <div class="card kpi"><span class="label">Cómo vamos</span><b id="pRuta">—</b></div>
+      </div>
+
+      <div class="card section">
+        <h2>Lectura simple</h2>
+        <div id="pLectura" class="simple">—</div>
+      </div>
+    </section>
+
+    <section id="captura" class="view">
+      <h1 class="title">CAPTURA MANUAL — ÚNICA ZONA DE EDICIÓN</h1>
+      <p class="sub">Registro diario de los datos de Zepp Life / báscula Xiaomi y sueño.</p>
+      <div class="card">
+        <form id="captureForm">
+          <div class="field"><label>Fecha</label><input type="date" id="fecha" required></div>
+          <div class="field"><label>Peso (kg)</label><input type="number" step="0.01" id="peso" required></div>
+          <div class="field"><label>Grasa (%)</label><input type="number" step="0.01" id="grasa" required></div>
+          <div class="field"><label>Agua (%)</label><input type="number" step="0.01" id="agua" required></div>
+          <div class="field"><label>Proteína (%)</label><input type="number" step="0.01" id="proteina" required></div>
+          <div class="field"><label>BMR (kcal)</label><input type="number" step="1" id="bmr" required></div>
+          <div class="field"><label>Grasa visceral</label><input type="number" step="1" id="visceral" required></div>
+          <div class="field"><label>Músculo (kg)</label><input type="number" step="0.01" id="musculo" required></div>
+          <div class="field"><label>Masa ósea (kg)</label><input type="number" step="0.01" id="hueso" required></div>
+          <div class="field"><label>Puntuación</label><input type="number" step="1" id="puntuacion" required></div>
+          <div class="field"><label>Edad corporal</label><input type="number" step="1" id="edadCorporal" required></div>
+          <div class="field"><label>Peso ideal Zepp (kg)</label><input type="number" step="0.01" id="idealZepp" required></div>
+          <div class="field"><label>Sueño (h)</label><input type="number" step="0.1" id="sueno" required></div>
+          <div class="actions"><button class="primary" type="submit">Registrar medición</button></div>
+        </form>
+        <div id="captureMsg" class="msg"></div>
+      </div>
+    </section>
+
+    <section id="historial" class="view">
+      <h1 class="title">HISTORIAL A:Z</h1>
+      <p class="sub">Almacén longitudinal central del Proyecto 130.</p>
+      <div class="tablewrap"><table><thead id="histHead"></thead><tbody id="histBody"></tbody></table></div>
+    </section>
+
+    <section id="simulador" class="view">
+      <h1 class="title">SIMULADOR</h1>
+      <p class="sub">Prueba de reglas y estados sin escribir en el Historial.</p>
+      <div class="card">
+        <form id="simForm">
+          <div class="field"><label>Peso (kg)</label><input id="sPeso" type="number" step="0.01" value="121.8"></div>
+          <div class="field"><label>Grasa (%)</label><input id="sGrasa" type="number" step="0.01" value="38.8"></div>
+          <div class="field"><label>Agua (%)</label><input id="sAgua" type="number" step="0.01" value="43.6"></div>
+          <div class="field"><label>Proteína (%)</label><input id="sProteina" type="number" step="0.01" value="14.3"></div>
+          <div class="field"><label>Visceral</label><input id="sVisceral" type="number" step="1" value="16"></div>
+          <div class="field"><label>Músculo (kg)</label><input id="sMusculo" type="number" step="0.01" value="70.71"></div>
+          <div class="field"><label>Masa ósea (kg)</label><input id="sHueso" type="number" step="0.01" value="3.8"></div>
+          <div class="field"><label>Edad corporal</label><input id="sEdad" type="number" step="1" value="66"></div>
+          <div class="actions"><button class="primary" type="submit">Simular</button></div>
+        </form>
+      </div>
+      <div id="simOut" class="card section simple"></div>
+    </section>
+
+    <section id="guia" class="view">
+      <h1 class="title">GUÍA RÁPIDA — CÓMO LEER TU PANEL</h1>
+      <p class="sub">Reglas de interpretación usadas por el proyecto.</p>
+      <div class="card guide">
+        <div class="metric"><b>Regla principal</b><span>Cada día usamos los números de Zepp Life. No mezclamos otras fuentes.</span></div>
+        <div class="metric"><b>Si dos pantallas difieren</b><span>Usamos la pantalla detallada de esa métrica.</span></div>
+        <div class="metric"><b>Grasa corporal</b><span>17–22% en rango. Queremos que baje hacia el rango sin perder mucho músculo.</span></div>
+        <div class="metric"><b>Agua corporal</b><span>55–65,1% en rango. Queremos que suba hacia el rango.</span></div>
+        <div class="metric"><b>Proteína</b><span>16–18% en rango. Queremos que suba hacia el rango.</span></div>
+        <div class="metric"><b>Grasa visceral</b><span>Menos de 10 en rango. 10–15 elevada. Más de 15 alta.</span></div>
+        <div class="metric"><b>Masa ósea</b><span>3,2–4,2 kg en rango.</span></div>
+        <div class="metric"><b>Músculo</b><span>Se compara con la referencia inicial de 70,71 kg y tolerancia ±0,3 kg.</span></div>
+        <div class="metric"><b>BMR</b><span>Se usa el dato que entrega la báscula.</span></div>
+        <div class="metric"><b>Promedio 7 días</b><span>Ayuda a no sacar conclusiones por un solo día.</span></div>
+      </div>
+    </section>
+
+    <section id="config" class="view">
+      <h1 class="title">CONFIGURACIÓN</h1>
+      <p class="sub">Perfil, metas, umbrales, motor y tolerancias.</p>
+      <div class="tablewrap"><table class="config"><tbody id="configBody"></tbody></table></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const CFG={
+  sex:"Hombre", age:36, height:1.77,
+  start:"2026-09-24", target:"2027-02-01", goal:90, zeppIdeal:67.9,
+  fat:{veryLow:11,normalFrom:17,normalTo:22,elevatedTo:27},
+  water:{from:55,to:65.1}, protein:{from:16,to:18},
+  visceral:{normalBelow:10,elevatedTo:15}, bone:{from:3.2,to:4.2},
+  bmi:{from:18.5,to:24.9,aboveTo:29.9,highFrom:30},
+  tol:{weight:.05,muscle:.3,route:.3},
+  bodyType:{muscleLow:49.4,muscleHigh:59.5}
+};
+
+const BASE={
+  day:0,date:"2026-09-23",weight:121.8,fat:38.8,water:43.6,protein:14.3,bmr:2244,
+  visceral:16,muscle:70.71,bone:3.8,score:45,bodyAge:66,zeppIdeal:67.9,
+  evidence:"Base - 2026-09-23 - Zepp Life.png",sleep:null
+};
+
+const KEY="proyecto130.historial.v1";
+let history=loadHistory();
+
+function loadHistory(){
+  try{
+    const v=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(Array.isArray(v)&&v.length) return v.map(enrichAll);
+  }catch(e){}
+  const first=enrichAll(BASE);
+  localStorage.setItem(KEY,JSON.stringify([first]));
+  return [first];
+}
+function saveHistory(){localStorage.setItem(KEY,JSON.stringify(history));}
+function n(v){return v===null||v===""||Number.isNaN(Number(v))?null:Number(v)}
+function fmt(v,d=1){return v==null?"—":Number(v).toLocaleString("es-CO",{minimumFractionDigits:d,maximumFractionDigits:d})}
+function daysBetween(a,b){return Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/86400000)}
+function initialWeight(){return history.length?Number(history[0].weight):BASE.weight}
+function initialMuscle(){return history.length?Number(history[0].muscle):BASE.muscle}
+function initialScore(){return history.length?Number(history[0].score):BASE.score}
+function routeWeight(date){
+  const iw=initialWeight(), total=daysBetween(CFG.start,CFG.target), elapsed=daysBetween(CFG.start,date);
+  if(date<=CFG.start)return iw;
+  if(date>=CFG.target)return CFG.goal;
+  return iw-((iw-CFG.goal)*(elapsed/total));
+}
+function bodyType(fat,muscle){
+  if(fat<CFG.fat.normalFrom){
+    if(muscle<CFG.bodyType.muscleLow)return"Delgado";
+    if(muscle>CFG.bodyType.muscleHigh)return"Musculoso delgado";
+    return"Delgado en forma";
+  }
+  if(fat<=CFG.fat.normalTo){
+    if(muscle<CFG.bodyType.muscleLow)return"Falta de ejercicio";
+    if(muscle>CFG.bodyType.muscleHigh)return"Musculoso";
+    return"Equilibrado";
+  }
+  if(muscle<CFG.bodyType.muscleLow)return"Obeso";
+  if(muscle>CFG.bodyType.muscleHigh)return"Regordete";
+  return"Sobrepeso";
+}
+function previousNumeric(index,key){
+  for(let i=index-1;i>=0;i--) if(history[i][key]!=null) return Number(history[i][key]);
+  return null;
+}
+function rolling(index,key){
+  const vals=[];
+  for(let i=Math.max(0,index-6);i<=index;i++)if(history[i][key]!=null)vals.push(Number(history[i][key]));
+  return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+}
+function simpleReading(r){
+  if(r.day===0)return"Medición base antes del inicio";
+  const q=r.dWeight,rf=r.dFat,s=r.dMuscle;
+  if(q==null||rf==null||s==null)return"Cambio mixto. Mira el promedio de 7 días.";
+  if(Math.abs(q)<CFG.tol.weight && (rf<0 || s>CFG.tol.muscle))return"Recomposición: el peso se mantiene pero mejora la composición corporal.";
+  if(q>0 && rf>0)return"Subieron el peso y la grasa corporal. Revisa la tendencia de varios días y posibles cambios de hidratación.";
+  if(q<0 && Math.abs(rf)<CFG.tol.weight && s>=-CFG.tol.muscle)return"Bien: bajó el peso conservando la masa muscular.";
+  if(q<0 && rf<0 && s>=-CFG.tol.muscle)return"Bien: bajaron peso y grasa y el músculo se mantuvo.";
+  if(q<0 && rf>0)return"Peso abajo, pero grasa arriba. Mira varios días antes de concluir.";
+  if(q<0 && s<-CFG.tol.muscle)return"Bajó el peso, pero también el músculo. Hay que vigilar esta tendencia.";
+  if(q>0 && s>0 && rf<=0)return"Subió el peso, pero también el músculo y la grasa no subió. No mires solo la balanza.";
+  return"Cambio mixto. Mira el promedio de 7 días.";
+}
+function enrichAt(r,index){
+  r.day=index===0?0:daysBetween(CFG.start,r.date)+1;
+  r.bmi=r.weight?Number(r.weight)/(CFG.height*CFG.height):null;
+  r.bodyType=bodyType(Number(r.fat),Number(r.muscle));
+  r.route=routeWeight(r.date);
+  const pw=previousNumeric(index,"weight"),pf=previousNumeric(index,"fat"),pm=previousNumeric(index,"muscle"),pa=previousNumeric(index,"water"),pv=previousNumeric(index,"visceral");
+  r.dWeight=pw==null?null:Number(r.weight)-pw;
+  r.dFat=pf==null?null:Number(r.fat)-pf;
+  r.dMuscle=pm==null?null:Number(r.muscle)-pm;
+  r.dWater=pa==null?null:Number(r.water)-pa;
+  r.dVisceral=pv==null?null:Number(r.visceral)-pv;
+  r.avg7Weight=rolling(index,"weight");
+  r.avg7Fat=rolling(index,"fat");
+  r.reading=simpleReading(r);
+  return r;
+}
+function enrichAll(r){
+  return {...r,
+    weight:n(r.weight),fat:n(r.fat),water:n(r.water),protein:n(r.protein),bmr:n(r.bmr),visceral:n(r.visceral),
+    muscle:n(r.muscle),bone:n(r.bone),score:n(r.score),bodyAge:n(r.bodyAge),zeppIdeal:n(r.zeppIdeal),sleep:n(r.sleep)
+  };
+}
+function rebuild(){
+  history=history.sort((a,b)=>a.date.localeCompare(b.date));
+  history=history.map((r,i)=>enrichAt(enrichAll(r),i));
+  saveHistory();
+  renderAll();
+}
+function statusFat(v){if(v<11)return["MUY BAJA","bad"];if(v<17)return["BAJA","warn"];if(v<=22)return["EN RANGO","good"];if(v<=27)return["ELEVADA","warn"];return["ALTA","bad"]}
+function statusWater(v){return v<55?["BAJA","warn"]:v<=65.1?["EN RANGO","good"]:["ALTA","warn"]}
+function statusProtein(v){return v<16?["BAJA","warn"]:v<=18?["EN RANGO","good"]:["ALTA","warn"]}
+function statusVisceral(v){return v<10?["EN RANGO","good"]:v<=15?["ELEVADA","warn"]:["ALTA","bad"]}
+function statusBone(v){return v<3.2?["BAJA","warn"]:v<=4.2?["EN RANGO","good"]:["ALTA","warn"]}
+function statusBMI(v){return v<18.5?["BAJO","warn"]:v<=24.9?["EN RANGO","good"]:v<=29.9?["POR ENCIMA","warn"]:["ALTO","bad"]}
+function statusMuscle(v){return v>initialMuscle()+.3?["SUBIÓ","good"]:v<initialMuscle()-.3?["BAJÓ","bad"]:["SE MANTIENE","info"]}
+function statusAge(v){return v<=CFG.age?["IGUAL O MENOR","good"]:["POR ENCIMA","warn"]}
+function statusScore(v){return v>initialScore()?["MEJORÓ","good"]:v<initialScore()?["BAJÓ","bad"]:["SIN CAMBIO","info"]}
+function badge([t,c]){return '<span class="badge '+c+'">'+t+'</span>'}
+function metric(name,value,status,unit=""){return '<div class="metric"><span>'+name+'</span><span><b>'+value+(unit?" "+unit:"")+'</b> '+badge(status)+'</span></div>'}
+
+function renderPanel(){
+  const r=history[history.length-1], iw=initialWeight();
+  const lost=iw-r.weight, total=iw-CFG.goal, progress=total===0?0:(lost/total)*100, remain=Math.max(r.weight-CFG.goal,0);
+  document.getElementById("pPeso").textContent=fmt(r.weight,1)+" kg";
+  document.getElementById("pFalta").textContent=fmt(remain,1)+" kg";
+  document.getElementById("pProg").textContent=fmt(Math.max(0,progress),0)+"%";
+  document.getElementById("compList").innerHTML=
+    metric("Grasa corporal",fmt(r.fat,1),statusFat(r.fat),"%")+
+    metric("Masa muscular",fmt(r.muscle,2),statusMuscle(r.muscle),"kg")+
+    metric("Agua corporal",fmt(r.water,1),statusWater(r.water),"%")+
+    metric("Masa ósea",fmt(r.bone,1),statusBone(r.bone),"kg")+
+    metric("Proteína",fmt(r.protein,1),statusProtein(r.protein),"%");
+  document.getElementById("healthList").innerHTML=
+    metric("IMC",fmt(r.bmi,1),statusBMI(r.bmi),"kg/m²")+
+    metric("BMR",fmt(r.bmr,0),["DATO ACTUAL","info"],"kcal/día")+
+    metric("Grasa visceral",fmt(r.visceral,0),statusVisceral(r.visceral))+
+    metric("Puntuación",fmt(r.score,0),statusScore(r.score))+
+    metric("Edad corporal",fmt(r.bodyAge,0),statusAge(r.bodyAge),"años")+
+    metric("Sueño",fmt(r.sleep,1),["DATO ACTUAL","info"],"h");
+  const today=new Date().toISOString().slice(0,10), totalDays=daysBetween(CFG.start,CFG.target)+1;
+  const day=Math.max(1,Math.min(daysBetween(CFG.start,today)+1,totalDays));
+  const remaining=Math.max(daysBetween(today,CFG.target),0);
+  const kgWeek=remaining?Math.max(r.weight-CFG.goal,0)/(remaining/7):0;
+  const route=routeWeight(r.date);
+  let routeTxt="VAMOS EN RUTA";
+  if(r.weight<route-CFG.tol.route)routeTxt="VAMOS MEJOR QUE LA RUTA";
+  if(r.weight>route+CFG.tol.route)routeTxt="HAY QUE RECUPERAR RITMO";
+  document.getElementById("pDia").textContent=day+" de "+totalDays;
+  document.getElementById("pDias").textContent=remaining;
+  document.getElementById("pSem").textContent=fmt(kgWeek,1)+" kg/sem";
+  document.getElementById("pRuta").textContent=routeTxt;
+  document.getElementById("pLectura").textContent=r.reading;
+}
+
+const HEAD=["Día","Fecha","Peso (kg)","IMC","Grasa (%)","Agua (%)","Proteína (%)","BMR báscula (kcal)","Grasa visceral","Músculo (kg)","Masa ósea (kg)","Puntuación","Edad corporal","Peso ideal Zepp (kg)","Tipo de cuerpo","Peso de ruta (kg)","Cambio peso (kg)","Cambio grasa (pp)","Cambio músculo (kg)","Cambio agua (pp)","Cambio visceral","Promedio 7 días peso","Promedio 7 días grasa","Lectura simple","Evidencia","Sueño (h)"];
+function renderHistory(){
+  document.getElementById("histHead").innerHTML="<tr>"+HEAD.map(x=>"<th>"+x+"</th>").join("")+"</tr>";
+  document.getElementById("histBody").innerHTML=history.map(r=>"<tr>"+
+    [r.day,r.date,fmt(r.weight,2),fmt(r.bmi,1),fmt(r.fat,1),fmt(r.water,1),fmt(r.protein,1),fmt(r.bmr,0),fmt(r.visceral,0),fmt(r.muscle,2),fmt(r.bone,1),fmt(r.score,0),fmt(r.bodyAge,0),fmt(r.zeppIdeal,1),r.bodyType,fmt(r.route,1),fmt(r.dWeight,2),fmt(r.dFat,2),fmt(r.dMuscle,2),fmt(r.dWater,2),fmt(r.dVisceral,0),fmt(r.avg7Weight,2),fmt(r.avg7Fat,2),r.reading,r.evidence||"—",fmt(r.sleep,1)]
+      .map(v=>"<td>"+v+"</td>").join("")+"</tr>").join("");
+}
+
+function renderConfig(){
+  const rows=[
+    ["Sexo",CFG.sex],["Edad",CFG.age],["Estatura (m)",CFG.height],
+    ["Fecha de inicio",CFG.start],["Fecha objetivo",CFG.target],["Peso inicial (kg)",fmt(initialWeight(),1)],
+    ["Meta del proyecto (kg)",fmt(CFG.goal,1)],["Peso ideal Zepp (kg)",fmt(CFG.zeppIdeal,1)],
+    ["Grasa: muy baja hasta (%)",CFG.fat.veryLow],["Grasa: normal desde (%)",CFG.fat.normalFrom],["Grasa: normal hasta (%)",CFG.fat.normalTo],["Grasa: elevada hasta (%)",CFG.fat.elevatedTo],
+    ["Agua: rango normal",CFG.water.from+"–"+CFG.water.to],["Proteína: rango normal",CFG.protein.from+"–"+CFG.protein.to],
+    ["Grasa visceral: normal si es menor a",CFG.visceral.normalBelow],["Grasa visceral: elevada hasta",CFG.visceral.elevatedTo],
+    ["Masa ósea: normal",CFG.bone.from+"–"+CFG.bone.to],["IMC: rango normal",CFG.bmi.from+"–"+CFG.bmi.to],
+    ["Última fila con peso",history.length+1],["Última fecha registrada",history[history.length-1].date],
+    ["Ruta de la última fecha",fmt(history[history.length-1].route,1)],["Ruta de hoy",fmt(routeWeight(new Date().toISOString().slice(0,10)),1)],
+    ["Masa muscular inicial (kg)",fmt(initialMuscle(),2)],["Puntuación inicial",fmt(initialScore(),0)],
+    ["Tolerancia peso estable (kg)",CFG.tol.weight],["Tolerancia músculo estable (kg)",CFG.tol.muscle],["Tolerancia estado de ruta (kg)",CFG.tol.route],
+    ["Tipo corporal: músculo bajo si menor a (kg)",CFG.bodyType.muscleLow],["Tipo corporal: músculo alto si mayor a (kg)",CFG.bodyType.muscleHigh]
+  ];
+  document.getElementById("configBody").innerHTML=rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+r[1]+"</td></tr>").join("");
+}
+function renderAll(){renderPanel();renderHistory();renderConfig();}
+
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");document.getElementById(b.dataset.view).classList.add("active");
+});
+
+document.getElementById("fecha").value=new Date().toISOString().slice(0,10);
+document.getElementById("captureForm").onsubmit=e=>{
+  e.preventDefault();
+  const date=document.getElementById("fecha").value;
+  if(history.some(r=>r.date===date)){document.getElementById("captureMsg").textContent="Ya existe una medición para esa fecha.";return}
+  const row={
+    date,
+    weight:n(peso.value),fat:n(grasa.value),water:n(agua.value),protein:n(proteina.value),bmr:n(bmr.value),
+    visceral:n(visceral.value),muscle:n(musculo.value),bone:n(hueso.value),score:n(puntuacion.value),
+    bodyAge:n(edadCorporal.value),zeppIdeal:n(idealZepp.value),sleep:n(sueno.value)
+  };
+  row.evidence="Día "+String(Math.max(1,daysBetween(CFG.start,date)+1)).padStart(3,"0")+" - "+date+" - Zepp Life.png";
+  history.push(row);rebuild();
+  document.getElementById("captureMsg").textContent="Medición registrada.";
+};
+
+document.getElementById("simForm").onsubmit=e=>{e.preventDefault();runSim()};
+function runSim(){
+  const w=n(sPeso.value),f=n(sGrasa.value),wa=n(sAgua.value),pr=n(sProteina.value),v=n(sVisceral.value),m=n(sMusculo.value),bo=n(sHueso.value),ag=n(sEdad.value),bmi=w/(CFG.height*CFG.height);
+  document.getElementById("simOut").innerHTML=
+    "Peso "+fmt(w,1)+" kg · IMC "+fmt(bmi,1)+" ("+statusBMI(bmi)[0]+") · Grasa "+fmt(f,1)+"% ("+statusFat(f)[0]+") · Agua "+fmt(wa,1)+"% ("+statusWater(wa)[0]+") · Proteína "+fmt(pr,1)+"% ("+statusProtein(pr)[0]+") · Visceral "+fmt(v,0)+" ("+statusVisceral(v)[0]+") · Músculo "+fmt(m,2)+" kg ("+statusMuscle(m)[0]+") · Masa ósea "+fmt(bo,1)+" kg ("+statusBone(bo)[0]+") · Edad corporal "+fmt(ag,0)+" ("+statusAge(ag)[0]+")";
+}
+runSim();
+rebuild();
+</script>
+</body>
+</html>
